@@ -1,0 +1,521 @@
+﻿
+ <?php
+
+include_once("DbManager.php");
+
+class cCliente
+{
+	//Constructor
+	function cCliente()
+	{
+
+
+	}
+
+  function existe_usuario($id)
+  {
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="select id_usuario from usuario where id_usuario = $id;";
+    $resultado=mysql_query($query) or die("Error consultar_autor");
+    $row = mysql_fetch_array($resultado);
+    return $row['id_usuario'] != null;
+  }
+
+  }
+
+  function agregar_usuario($nombre,$dinero)
+  {
+
+    $con=new DBManager;
+    $titulo = "Agregar Usuario";
+    $mensaje = "no hay mensaje";
+    $direccion = "Agregar_Usuario.html";
+
+    //usamos el mtodo conectar para realizar la conexin
+      if ($con->conectar()==true)
+      {
+        $query="insert into usuario (nombre,dinero) value ('$nombre',$dinero);";
+       $resultado=mysql_query($query) or die("Error consultar_tipo_libro");
+       if($resultado){
+         $mensaje = "El usuario fue agregado de manera exitosa";
+       } else {
+         $mensaje = "No se pudo agregar el usuario";
+       }
+      } else {
+        $mensaje = "Hubo un error al conectar con la base de datos";
+      }
+      include("Mensaje.html");
+  }
+
+  function modificar_usuario($id,$nombre,$dinero)
+  {
+
+    $con=new DBManager;
+    $titulo = "Modificar Usuario";
+    $mensaje = "no hay mensaje";
+    $direccion = "Modificar_Usuario.html";
+
+    //usamos el mtodo conectar para realizar la conexin
+    if ($con->conectar()==true)
+    {
+      if($this->existe_usuario($id)){
+        $query="update usuario set nombre = '$nombre',dinero = $dinero where id_usuario = $id;";
+        $resultado=mysql_query($query) or die("Error consultar_tipo_libro");
+        if($resultado){
+         $mensaje = "El usuario fue modificado de manera exitosa";
+        } else {
+         $mensaje = "No se pudo modificar el usuario";
+        }
+      } else {
+        $mensaje = "El id de usuario que intentan modificar no existe";
+      }
+    } else {
+      $mensaje = "Hubo un error al conectar con la base de datos";
+    }
+
+    include("Mensaje.html");
+
+  }
+
+  function eliminar_usuario($id)
+  {
+
+    $con=new DBManager;
+    $titulo = "Eliminar Usuario";
+    $mensaje = "no hay mensaje";
+    $direccion = "Eliminar_Usuario.html";
+
+    //usamos el mtodo conectar para realizar la conexin
+    if ($con->conectar()==true)
+    {
+      if($this->existe_usuario($id)){
+       $query="delete from usuario where id_usuario = $id;";
+       $resultado=mysql_query($query) or die("Error consultar_tipo_libro");
+       if($resultado){
+         $mensaje = "El usuario fue eliminado de manera exitosa";
+       } else {
+         $mensaje = "No se pudo eliminar el usuario";
+       }
+      } else {
+        $mensaje = "El id de usuario que intentan eliminar no existe";
+      }
+    } else {
+      $mensaje = "Hubo un error al conectar con la base de datos";
+    }
+
+      include("Mensaje.html");
+
+  }
+  
+  
+  function mostrar_usuarios()
+  {
+
+    $con=new DBManager;
+    $titulo = "Usuarios Registrados";
+    $mensaje = "no hay mensaje";
+    $direccion = "index.html";
+
+    //usamos el mtodo conectar para realizar la conexin
+    if ($con->conectar()==true)
+    {
+      $query="select * from usuario;";
+      $resultado=mysql_query($query) or die("Error consultar_tipo_libro");
+      if($resultado){
+        return $resultado;
+      } else {
+        $mensaje = "Error, no se pudieron mostrar los usuarios registrados";
+      }
+    } else {
+      $mensaje = "Hubo un error al conectar con la base de datos";
+    }
+
+    include("Mensaje.html");
+
+  }
+  
+  //Movimientos
+
+  function transferencia()
+  {
+
+    $con=new DBManager;
+    $titulo = "Usuarios Registrados";
+    $mensaje = "no hay mensaje";
+    $direccion = "index.html";
+
+    //usamos el mtodo conectar para realizar la conexin
+    if ($con->conectar()==true)
+    {
+      $query="select * from usuario;";
+      $resultado=mysql_query($query) or die("Error consultar_tipo_libro");
+      if($resultado){
+        return $resultado;
+      } else {
+        $mensaje = "Error, no se pudieron mostrar los usuarios registrados";
+      }
+    } else {
+      $mensaje = "Hubo un error al conectar con la base de datos";
+    }
+
+    include("Mensaje.html");
+
+  }
+
+//-------------------------------------------------------------------------------
+
+function existe_autor($autor)
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="select id_autor from autor where id_autor = $autor;";
+    $resultado=mysql_query($query) or die("Error consultar_autor");
+    $row = mysql_fetch_array($resultado);
+    return $row['id_autor'] != null;
+  }
+
+}
+
+  function consultar_agregar_libro($nombre,$tipo,$editorial,$actual,$autor)
+	{
+
+		$con=new DBManager;
+
+		//usamos el mtodo conectar para realizar la conexin
+		if ($con->conectar()==true)
+		{
+      if($this->existe_tipo_libro($tipo)){
+        if($this->existe_autor($autor)){
+          $query="insert into libro (nombre,id_tipo,editorial,actual,id_autor) value ('$nombre',$tipo,'$editorial','$actual',$autor);";
+          $resultado=mysql_query($query) or die("Error consultar_agregar_libro");
+        } else echo "El autor no se encuentra";
+      } else echo "El tipo de libro no se encuentra";
+		}
+    include_once("index.php");
+}
+
+function consultar_modificar_libro($id_libro,$nombre,$tipo,$editorial,$actual,$autor)
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    if($this->existe_tipo_libro($tipo)){
+      if($this->existe_autor($autor)){
+        $query="update libro set nombre = '$nombre', id_tipo = $tipo, editorial = '$editorial', actual = '$actual', id_autor = $autor where id_libro = $id_libro;";
+        $resultado=mysql_query($query) or die("Error consultar_agregar_libro");
+      } else echo "El autor no se encuentra";
+    } else echo "El tipo de libro no se encuentra";
+  }
+  include_once("index.php");
+}
+
+function consultar_eliminar_libro($id_libro)
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="delete from prestamo where id_libro = $id_libro;";
+    $resultado=mysql_query($query) or die("Error consultar_eliminar_libro_prestamo");
+    $query="delete from libro where id_libro = $id_libro;";
+    $resultado=mysql_query($query) or die("Error consultar_eliminar_libro");
+  }
+  include_once("index.php");
+}
+
+//LECTOR
+
+function consultar_agregar_lector($suspencion,$numero_libros)
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="insert into lector (suspencion,numero_libros) value ($suspencion,$numero_libros);";
+    $resultado=mysql_query($query) or die("Error consultar_agregar_lector");
+  }
+  include_once("index.php");
+}
+
+function consultar_modificar_lector($id_lector,$suspencion,$numero_libros)
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="update lector set suspencion = $suspencion, numero_libros = $numero_libros where id_lector = $id_lector;";;
+    $resultado=mysql_query($query) or die("Error consultar_modificar_lector");
+  }
+  include_once("index.php");
+}
+
+function consultar_eliminar_lector($id_lector)
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="delete from prestamo where id_lector = $id_lector;";
+    $resultado=mysql_query($query) or die("Error consultar_eliminar_lector_prestamo");
+    $query="delete from lector where id_lector = $id_lector";;
+    $resultado=mysql_query($query) or die("Error consultar_eliminar_lector");
+  }
+  include_once("index.php");
+}
+
+
+//AUTOR
+
+function consultar_agregar_autor($nombre,$nacionalidad,$nacimiento)
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="insert into autor (nombre,nacionalidad,nacimiento) value ('$nombre','$nacionalidad','$nacimiento');";
+    $resultado=mysql_query($query) or die("Error consultar_agregar_autor");
+  }
+  include_once("index.php");
+}
+
+function consultar_modificar_autor($id_autor,$nombre,$nacionalidad,$nacimiento)
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="update autor set nombre = '$nombre', nacionalidad = '$nacionalidad', nacimiento = '$nacimiento' where id_autor = $id_autor;";
+    $resultado=mysql_query($query) or die("Error consultar_agregar_autor");
+  }
+  include_once("index.php");
+}
+
+//PRESTAMO
+
+function existe_lector($id_lector)
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="select id_lector from lector where id_lector = $id_lector;";
+    $resultado=mysql_query($query) or die("Error consultar_existe_lector");
+    $row = mysql_fetch_array($resultado);
+    return $row['id_lector'] != null;
+  }
+}
+
+function existe_libro($id_libro)
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="select id_libro from libro where id_libro = $id_libro;";
+    $resultado=mysql_query($query) or die("Error consultar_existe_libro");
+    $row = mysql_fetch_array($resultado);
+    return $row['id_libro'] != null;
+  }
+}
+
+function consultar_agregar_prestamo($id_lector,$id_libro,$dias,$id_estado)
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    if($this->existe_lector($id_lector)){
+      if($this->existe_libro($id_libro)){
+        $query="select numero_libros from lector where id_lector = $id_lector;";
+        $resultado=mysql_query($query) or die("Error consultar_numero_libros_lector");
+        $row = mysql_fetch_array($resultado);
+        $nl = $row['numero_libros'];
+        $nl = ($nl + 1);
+        if($nl < 3){
+        $query="update lector set numero_libros = $nl where id_lector = $id_lector;";
+        $resultado=mysql_query($query) or die("Error consultar_numero_libros_lector_actualizar");
+        $query="insert into prestamo (id_lector,id_libro,dias,id_estado) value ($id_lector,$id_libro,$dias,$id_estado);";
+        $resultado=mysql_query($query) or die("Error consultar_agregar_prestamo");
+      } else echo "limite de prestamos alcanzado (3)";
+      } else echo "libro no existe";
+    } else echo "lector no existe";
+  }
+  include_once("index.php");
+}
+
+
+function consultar_devolver_prestamo($id_prestamo)
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+        $query="select id_lector from prestamo where id_prestamo = $id_prestamo;";
+        $resultado=mysql_query($query) or die("Error consultar_id_lector_prestamo");
+        $row = mysql_fetch_array($resultado);
+        $id_lector = $row['id_lector'];
+        $query="select numero_libros from lector where id_lector = $id_lector;";
+        $resultado=mysql_query($query) or die("Error consultar_numero_libros_lector");
+        $row = mysql_fetch_array($resultado);
+        $nl = $row['numero_libros'];
+        $nl = ($nl - 1);
+        if($nl >= 0){
+        $query="update lector set numero_libros = $nl where id_lector = $id_lector;";
+        $resultado=mysql_query($query) or die("Error consultar_numero_libros_lector_actualizar");
+        $query="delete from prestamo where id_prestamo = $id_prestamo";
+        $resultado=mysql_query($query) or die("Error consultar_eliminar_prestamo");
+        } else echo "no tiene libros que devolver";
+  }
+  include_once("index.php");
+}
+
+
+//MOSTRAR
+
+function consultar_mostrar_libros()
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="select l.id_libro, l.nombre, t.tipo, l.editorial, l.actual, a.nombre as autor, a.nacionalidad, a.nacimiento from libro l, tipo_libro t, autor a where t.id_tipo = l.id_tipo && a.id_autor = l.id_autor;";
+    $result = mysql_query($query) or die ("Error consultar_mostrar_libros");
+    return $result;
+  }
+
+}
+
+function consultar_mostrar_lectores()
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="select * from lector;";
+    $result = mysql_query($query) or die ("Error consultar_mostrar_lectores");
+    return $result;
+  }
+
+}
+
+function consultar_mostrar_autores()
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="select * from autor;";
+    $result = mysql_query($query) or die ("Error consultar_mostrar_autores");
+    return $result;
+  }
+
+}
+
+function consultar_mostrar_tipo_libro()
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="select * from tipo_libro;";
+    $result = mysql_query($query) or die ("Error consultar_mostrar_autores");
+    return $result;
+  }
+
+}
+
+
+function consultar_mostrar_prestamos()
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="select p.id_prestamo, l.id_lector, l.suspencion, l.numero_libros, i.id_libro, i.nombre, t.tipo, i.editorial, i.actual, a.nombre as autor, a.nacionalidad, a.nacimiento from prestamo p, lector l, libro i, tipo_libro t, autor a where l.id_lector = p.id_lector && i.id_libro = p.id_libro && t.id_tipo = i.id_tipo && a.id_autor = i.id_autor;";
+    $result = mysql_query($query) or die ("Error consultar_mostrar_prestamos");
+    return $result;
+  }
+
+}
+
+
+//Proceso automatico
+
+function consultar_proceso_automatico()
+{
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="update prestamo set dias = (dias - 1) where dias > 0;";
+    $result = mysql_query($query) or die ("Error consultar_mostrar_prestamos");
+    $query="update lector set suspencion = (suspencion + 1) where id_lector in (select id_lector from prestamo where dias = 0);";
+    $result = mysql_query($query) or die ("Error consultar_mostrar_prestamos");
+    $query="update lector set suspencion = 0 where id_lector in (select id_lector from prestamo where dias > 0);";
+    $result = mysql_query($query) or die ("Error consultar_mostrar_prestamos");
+    $query="update prestamo set id_estado = 2 where dias = 0;";
+    $result = mysql_query($query) or die ("Error consultar_mostrar_prestamos");
+    $query="update prestamo set id_estado = 1 where dias > 0;";
+    $result = mysql_query($query) or die ("Error consultar_mostrar_prestamos");
+  }
+
+}
+
+
+
+
+
+
+}//clase
+
+
+
+
+?>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
