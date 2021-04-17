@@ -1,0 +1,12 @@
+<?php
+
+include("Cservicios.html");
+
+$id = $_POST['ID'];
+$dinero = $_POST['DINERO'];
+
+$consulta = new cCliente;
+
+$consulta->introducir_dinero($id,$dinero);
+
+?>

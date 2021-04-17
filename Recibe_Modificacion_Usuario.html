@@ -1,0 +1,13 @@
+<?php
+
+    include("Cservicios.html");
+
+    $id = $_POST['ID'];
+    $nombre = $_POST['NOMBRE'];
+    $dinero = $_POST['DINERO'];
+
+    $consulta = new cCliente;
+
+    $consulta->modificar_usuario($id,$nombre,$dinero);
+
+?>

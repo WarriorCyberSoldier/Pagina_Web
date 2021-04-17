@@ -1,0 +1,390 @@
+﻿
+ <?php
+
+include_once("DbManager.html");
+
+class cCliente
+{
+	//Constructor
+	function cCliente()
+	{
+
+
+	}
+
+  function existe_usuario($id)
+  {
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="select id_usuario from usuario where id_usuario = $id;";
+    $resultado=mysql_query($query) or die("Error consultar_autor");
+    $row = mysql_fetch_array($resultado);
+    return $row['id_usuario'] != null;
+  }
+
+  }
+
+  function ver_dinero($id)
+  {
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="select dinero from usuario where id_usuario = $id;";
+    $resultado=mysql_query($query) or die("Error consultar_autor");
+    $row = mysql_fetch_array($resultado);
+    return $row['dinero'];
+  }
+
+  }
+
+  function modificar_dinero($id,$signo,$dinero)
+  {
+
+  $con=new DBManager;
+
+  //usamos el mtodo conectar para realizar la conexin
+  if ($con->conectar()==true)
+  {
+    $query="update usuario set dinero = (dinero $signo $dinero) where id_usuario = $id;";
+    $resultado=mysql_query($query) or die("Error consultar_autor");
+    return $resultado;
+  }
+
+  }
+
+  function agregar_usuario($nombre,$dinero)
+  {
+
+    $con=new DBManager;
+    $titulo = "Agregar Usuario";
+    $mensaje = "no hay mensaje";
+    $direccion = "Agregar_Usuario.html";
+
+    //usamos el mtodo conectar para realizar la conexin
+      if ($con->conectar()==true)
+      {
+        $query="insert into usuario (nombre,dinero) value ('$nombre',$dinero);";
+       $resultado=mysql_query($query) or die("Error consultar_tipo_libro");
+       if($resultado){
+         $mensaje = "El usuario fue agregado de manera exitosa";
+       } else {
+         $mensaje = "No se pudo agregar el usuario";
+       }
+      } else {
+        $mensaje = "Hubo un error al conectar con la base de datos";
+      }
+      include("Mensaje.html");
+  }
+
+  function modificar_usuario($id,$nombre,$dinero)
+  {
+
+    $con=new DBManager;
+    $titulo = "Modificar Usuario";
+    $mensaje = "no hay mensaje";
+    $direccion = "Modificar_Usuario.html";
+
+    //usamos el mtodo conectar para realizar la conexin
+    if ($con->conectar()==true)
+    {
+      if($this->existe_usuario($id)){
+        $query="update usuario set nombre = '$nombre',dinero = $dinero where id_usuario = $id;";
+        $resultado=mysql_query($query) or die("Error consultar_tipo_libro");
+        if($resultado){
+         $mensaje = "El usuario fue modificado de manera exitosa";
+        } else {
+         $mensaje = "No se pudo modificar el usuario";
+        }
+      } else {
+        $mensaje = "El id de usuario que intentan modificar no existe";
+      }
+    } else {
+      $mensaje = "Hubo un error al conectar con la base de datos";
+    }
+
+    include("Mensaje.html");
+
+  }
+
+  function eliminar_usuario($id)
+  {
+
+    $con=new DBManager;
+    $titulo = "Eliminar Usuario";
+    $mensaje = "no hay mensaje";
+    $direccion = "Eliminar_Usuario.html";
+
+    //usamos el mtodo conectar para realizar la conexin
+    if ($con->conectar()==true)
+    {
+      if($this->existe_usuario($id)){
+       $query="delete from usuario where id_usuario = $id;";
+       $resultado=mysql_query($query) or die("Error consultar_tipo_libro");
+       if($resultado){
+         $mensaje = "El usuario fue eliminado de manera exitosa";
+       } else {
+         $mensaje = "No se pudo eliminar el usuario";
+       }
+      } else {
+        $mensaje = "El id de usuario que intentan eliminar no existe";
+      }
+    } else {
+      $mensaje = "Hubo un error al conectar con la base de datos";
+    }
+
+      include("Mensaje.html");
+
+  }
+  
+  
+  function mostrar_usuarios()
+  {
+
+    $con=new DBManager;
+    $titulo = "Usuarios Registrados";
+    $mensaje = "no hay mensaje";
+    $direccion = "index.html";
+
+    //usamos el mtodo conectar para realizar la conexin
+    if ($con->conectar()==true)
+    {
+      $query="select * from usuario;";
+      $resultado=mysql_query($query) or die("Error consultar_tipo_libro");
+      if($resultado){
+        return $resultado;
+      } else {
+        $mensaje = "Error, no se pudieron mostrar los usuarios registrados";
+      }
+    } else {
+      $mensaje = "Hubo un error al conectar con la base de datos";
+    }
+
+    include("Mensaje.html");
+
+  }
+  
+  //Movimientos
+
+  function transferencia($id_origen, $dinero, $id_destino)
+  {
+
+    $con=new DBManager;
+    $titulo = "Transferencia";
+    $mensaje = "no hay mensaje";
+    $direccion = "Transferencia.html";
+
+    //usamos el mtodo conectar para realizar la conexin
+    if ($con->conectar()==true)
+    {
+
+      $existe = true;
+      $existe_origen = $this->existe_usuario($id_origen);
+      $existe_destino = $this->existe_usuario($id_destino);
+
+      if(!$existe_origen && !$existe_destino){//si no existen
+        $mensaje = "El id de origen $id_origen y el id de destino $id_destino, no existen";
+        $existe = false;
+      } else {
+        if(!$existe_origen){
+          $mensaje = "El id de origen $id_origen, no existe";
+          $existe = false;
+        }
+  
+        if(!$existe_destino){
+          $mensaje = "El id de destino $id_destino, no existe";
+          $existe = false;
+        }
+      }
+
+      if($existe){
+        $tiene_dinero = true;
+        
+        if($dinero > $this->ver_dinero($id_origen)){
+          $mensaje = "La cantidad de $dinero es mayor a la que usted tiene en la cuenta, por favor ingrese una cantidad menor o igual para poder realizar su transferencia correctamente";
+          $tiene_dinero = false;
+        }
+
+        if($tiene_dinero){
+
+          $this->modificar_dinero($id_origen,"-",$dinero);//Decrementamos dinero del usuario que hace la transferencia
+          $this->modificar_dinero($id_destino,"+",$dinero);//Incrementamos dinero del usuario al que se le hace la tranferencia
+
+          $query="insert into transferencia (id_usuario_origen,dinero,id_usuario_destino) value ($id_origen,$dinero,$id_destino);";
+          $resultado=mysql_query($query) or die("Error consultar_tipo_libro");
+          if($resultado){
+            $mensaje = "La transferencia se realizó, correctamente";
+          } else {
+            $mensaje = "Error, la transferencia no se pudo realizar";
+          }
+        }
+
+      }
+    } else {
+      $mensaje = "Hubo un error al conectar con la base de datos";
+    }
+
+    include("Mensaje.html");
+
+  }
+
+  function introducir_dinero($id,$dinero)
+  {
+
+    $con=new DBManager;
+    $titulo = "Introducir Dinero";
+    $mensaje = "no hay mensaje";
+    $direccion = "Introducir_Dinero.html";
+
+    //usamos el mtodo conectar para realizar la conexin
+    if ($con->conectar()==true)
+    {
+      $prueba = $this->existe_usuario($id);
+
+      if($prueba){
+
+       $this->modificar_dinero($id,"+",$dinero);
+
+       $query="insert into ingreso_manual (id_usuario,dinero) value ($id,$dinero);";
+
+       $resultado=mysql_query($query) or die("Error consultar_tipo_libro");
+
+       if($resultado){
+         $mensaje = "El dinero fue agregado correctamente";
+       } else {
+         $mensaje = "No se pudo agregar el dinero";
+       }
+      } else {
+        $mensaje = "El id de usuario al que le intenta ingresar el dinero no existe";
+      }
+    } else {
+      $mensaje = "Hubo un error al conectar con la base de datos";
+    }
+
+      include("Mensaje.html");
+
+  }
+
+  function retirar_dinero($id,$dinero)
+  {
+
+    $con=new DBManager;
+    $titulo = "Retirar Dinero";
+    $mensaje = "no hay mensaje";
+    $direccion = "Retirar_Dinero.html";
+
+    //usamos el mtodo conectar para realizar la conexin
+    if ($con->conectar()==true)
+    {
+
+      $existe = true;
+      $existe_usuario = $this->existe_usuario($id);
+
+      if(!$existe_usuario){
+        $mensaje = "El usuario $id no existe";
+        $existe = false;
+      }
+
+      if($existe){
+        
+        $tiene_dinero = true;
+
+        if($dinero > $this->ver_dinero($id)){
+          $mensaje = "La cantidad de $dinero es mayor a la que usted tiene en la cuenta, por favor ingrese una cantidad menor o igual para poder realizar su retiro correctamente";
+          $tiene_dinero = false;
+        }
+
+        if($tiene_dinero){
+          $this->modificar_dinero($id,"-",$dinero);
+          $query="insert into retiro_manual (id_usuario,dinero) value ($id,$dinero);";
+          $resultado=mysql_query($query) or die("Error consultar_tipo_libro");
+          if($resultado){
+            $mensaje = "El retiro se ha realizado correctamente";
+          } else {
+            $mensaje = "Error, no se pudo realizar el retiro correctamente";
+          }
+        }
+
+      }
+
+    } else {
+      $mensaje = "Hubo un error al conectar con la base de datos";
+    }
+
+    include("Mensaje.html");
+
+  }
+
+
+  function mostrar_transferencias_parte1()
+  {
+  
+    $con=new DBManager;
+  
+    //usamos el mtodo conectar para realizar la conexin
+    if ($con->conectar()==true)
+    {
+      $query="select t.id_transferencia as ID, t.id_usuario_origen as ID_DE_REMITENTE, u.nombre as REMITENTE, t.dinero as CANTIDAD from transferencia t, usuario u where u.id_usuario = t.id_usuario_origen;";
+      $resultado=mysql_query($query) or die("Error consultar_autor");
+      return $resultado;
+    }
+  
+  }
+  
+  function mostrar_transferencias_parte2()
+  {
+  
+    $con=new DBManager;
+  
+    //usamos el mtodo conectar para realizar la conexin
+    if ($con->conectar()==true)
+    {
+      $query="select t.id_usuario_destino as ID_DE_DESTINATARIO, u.nombre as DESTINATARIO from transferencia t, usuario u where u.id_usuario = t.id_usuario_destino;";
+      $resultado=mysql_query($query) or die("Error consultar_autor");
+      return $resultado;
+    }
+  
+  }
+
+  function mostrar_ingresos()
+  {
+  
+    $con=new DBManager;
+  
+    //usamos el mtodo conectar para realizar la conexin
+    if ($con->conectar()==true)
+    {
+      $query="select i.id_ingreso as ID, i.id_usuario as ID_DE_USUARIO, u.nombre as USUARIO, i.dinero as CANTIDAD from ingreso_manual i, usuario u where u.id_usuario = i.id_usuario;";
+      $resultado=mysql_query($query) or die("Error consultar_autor");
+      return $resultado;
+    }
+  
+  }
+
+  function mostrar_retiros()
+  {
+  
+    $con=new DBManager;
+  
+    //usamos el mtodo conectar para realizar la conexin
+    if ($con->conectar()==true)
+    {
+      $query="select r.id_retiro as ID, r.id_usuario as ID_DE_USUARIO, u.nombre as USUARIO, r.dinero as CANTIDAD from retiro_manual r, usuario u where u.id_usuario = r.id_usuario;";
+      $resultado=mysql_query($query) or die("Error consultar_autor");
+      return $resultado;
+    }
+  
+  }
+
+}//clase
+
+?>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>

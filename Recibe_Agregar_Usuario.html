@@ -1,0 +1,12 @@
+<?php
+
+    include("Cservicios.html");
+
+    $nombre = $_POST['NOMBRE'];
+    $dinero = $_POST['DINERO'];
+
+    $consulta = new cCliente;
+
+    $consulta->agregar_usuario($nombre,$dinero);
+
+?>

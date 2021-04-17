@@ -1,0 +1,13 @@
+<?php
+
+include("Cservicios.html");
+
+$id_origen = $_POST['ID_ORIGEN'];
+$dinero = $_POST['DINERO'];
+$id_destino = $_POST['ID_DESTINO'];
+
+$consulta = new cCliente;
+
+$consulta->transferencia($id_origen,$dinero,$id_destino);
+
+?>
